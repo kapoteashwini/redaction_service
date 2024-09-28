@@ -10,6 +10,10 @@ module Api
 
         render plain: redacted_text
       end
+
+      def show
+        render plain: 'Redaction Service'
+      end
     end
   end
 end
