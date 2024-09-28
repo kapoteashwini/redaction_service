@@ -3,9 +3,9 @@ module Api
     class RedactionsController < ApplicationController
       def create
         text = request.body.read
+        print_log(text)
         redaction_words = RedactionWord.pluck(:word)
         redacted_text = TextRedactionService.new(text, redaction_words).redact
-        REDACTION_LOGGER.info("#{Time.now}: #{text}\n")
         render plain: redacted_text
       end
 

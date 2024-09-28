@@ -8,4 +8,12 @@ class ApplicationController < ActionController::Base
   def not_found
     render json: { error: 'Not Found' }, status: :not_found
   end
+
+  ''' 
+  As of now as we have only one logger file so added in the application controller.
+  For complex/vast projects requirements can move this method to the specific controllers
+  '''
+  def print_log(text)
+    REDACTION_LOGGER.info("#{Time.now}: #{text}\n")
+  end
 end
