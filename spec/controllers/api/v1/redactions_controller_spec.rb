@@ -1,24 +1,32 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::RedactionsController, type: :controller do
+  let(:redaction_words) { ['dog', 'dolphin'] }
+  let(:input_text) { 'A dog, a dolphin, and a cat are animals.' }
+  let(:redacted_text) { 'A REDACTED, a REDACTED, and a cat are animals.' }
+
+  before do
+    allow(RedactionWord).to receive(:pluck).and_return(redaction_words)
+  end
+
+  # POST API
   describe 'POST #create' do
-    let(:text) { 'This is a secret message with sensitive info' }
-    let(:redaction_words) { ['secret', 'sensitive'] }
-    let(:redacted_text) { 'This is a [REDACTED] message with [REDACTED] info' }
+    it 'redacts specified words from the input text' do
+      request.headers['CONTENT_TYPE'] = 'text/plain'
+      post :create, body: input_text
 
-    before do
-      # Stub out RedactionWord pluck method
-      allow(RedactionWord).to receive(:pluck).and_return(redaction_words)
-
-      # Stub out TextRedactionService to return redacted text
-      allow_any_instance_of(TextRedactionService).to receive(:redact).and_return(redacted_text)
-    end
-
-    it 'returns redacted text' do
-      post :create, body: text
-
-      expect(response).to have_http_status(:success)
       expect(response.body).to eq(redacted_text)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
+  # GET API
+  describe 'GET #show' do
+    it 'returns "Redaction Service"' do
+      get :show
+
+      expect(response.body).to eq('Redaction Service')
+      expect(response).to have_http_status(:ok)
     end
   end
 end
